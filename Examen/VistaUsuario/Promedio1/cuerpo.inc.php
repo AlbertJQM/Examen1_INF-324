@@ -32,20 +32,27 @@
                         </thead>
                         <tbody>
 <?php 
-    while($sigla = mysqli_fetch_array($res)){
+    for($i = 0; $i < 9; $i++){
+        $sql2 = "SELECT n.sigla, AVG(n.notafinal) AS Nota FROM nota n, persona p WHERE n.ci = p.ci AND p.departamento = '0".($i + 1)."' GROUP BY n.sigla";
+        $res2 = mysqli_query($con, $sql2);
+        $j = 0;
+        while($nota = mysqli_fetch_array($res2)){
+            $notasDepto[$i][$j] = $nota[1];
+            $j++;
+        }
+    }
+    //print_r($notasDepto);
+    for($j = 0; $j < 7; $j++){
+        $sigla = mysqli_fetch_array($res);
         echo "  <tr>
-                    <th scope='row'>".$sigla[0]."</th>";
+                    <th scope='row'>".$sigla[0]."</th>";    
         for($i = 0; $i < 9; $i++){
-            $sql2 = "SELECT p.departamento, AVG(n.notafinal) AS Nota FROM nota n, persona p WHERE n.ci = p.ci AND n.sigla = '".$sigla[0]."' AND p.departamento = '0".($i + 1)."' GROUP BY p.departamento";
-            $res2 = mysqli_query($con, $sql2);
-            $nota = mysqli_fetch_array($res2);
-            if($nota){
-                echo "<td>".$nota[1]."</td>";
+            if(isset($notasDepto[$i][$j])){
+                echo "<td>".$notasDepto[$i][$j]."</td>";
             }else{
                 echo "<td>0.0</td>";
             }
         }
-        echo "</tr>";
     }
 ?>
                         </tbody>
